@@ -20,6 +20,7 @@ type Conditions struct {
 	Raw          string                   `json:"raw"`
 	GroupBy      string                   `json:"groupBy"`
 	OrderBy      string                   `json:"orderBy"`
+	OrderColumn  string                   `json:"orderColumn"`
 	SelectRaw    string                   `json:"selectRaw"`
 	Pagination   *Pagination              `json:"pagination"`
 }
@@ -41,7 +42,9 @@ func AdvanceSearch(transaction *Transaction, model interface{}, condition *Condi
 	if len(condition.Like) > 0 {
 		for key, item := range condition.Like {
 			key = strutil.Snake(key)
-			tx = tx.Where(key+" like ?", "%"+fmt.Sprintf("%v", item)+"%")
+			if item.(string) != "" {
+				tx = tx.Where(key+" like ?", "%"+fmt.Sprintf("%v", item)+"%")
+			}
 		}
 	}
 	//精确查询
@@ -123,9 +126,25 @@ func AdvanceSearch(transaction *Transaction, model interface{}, condition *Condi
 		tx = tx.Group(condition.GroupBy)
 	}
 	//排序
-	if condition.OrderBy != "" {
-		tx = tx.Order(condition.OrderBy)
+	if condition.OrderColumn != "" {
+		tx = tx.Order(strutil.Snake(condition.OrderColumn) + " " + condition.OrderBy)
 	}
+	//分页
+	/*if condition.Pagination != nil {
+		page := condition.Pagination.Page
+		if page <= 0 {
+			page = 1
+		}
+		pageSize := condition.Pagination.PageSize
+		if pageSize <= 0 {
+			pageSize = DefaultPageSize
+		}
+		tx = tx.Limit(pageSize).Offset((page - 1) * pageSize)
+	}*/
+	return tx
+}
+
+func OffsetLimit(query *gorm.DB, condition *Conditions) *gorm.DB {
 	//分页
 	if condition.Pagination != nil {
 		page := condition.Pagination.Page
@@ -136,7 +155,7 @@ func AdvanceSearch(transaction *Transaction, model interface{}, condition *Condi
 		if pageSize <= 0 {
 			pageSize = DefaultPageSize
 		}
-		tx = tx.Limit(pageSize).Offset((page - 1) * pageSize)
+		query = query.Limit(pageSize).Offset((page - 1) * pageSize)
 	}
-	return tx
+	return query
 }

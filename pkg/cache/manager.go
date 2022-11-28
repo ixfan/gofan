@@ -3,6 +3,7 @@ package cache
 import (
 	"encoding/json"
 	"github.com/ixfan/gofan/pkg/cache/store"
+	"os"
 	"strconv"
 )
 
@@ -26,8 +27,14 @@ func NewManager(client ClientInterface) *Manager {
 }
 
 func Default() *Manager {
-	return &Manager{
-		client: store.NewRedisStore(),
+	if os.Getenv("cache.default") == "redis" {
+		return &Manager{
+			client: store.NewRedisStore(),
+		}
+	} else {
+		return &Manager{
+			client: store.NewBigCacheStore(),
+		}
 	}
 }
 

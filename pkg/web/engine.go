@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/ixfan/gofan/pkg/database/orm"
 	"github.com/ixfan/gofan/pkg/global"
@@ -16,7 +17,7 @@ type Engine struct {
 
 var server *Engine
 
-//Default 默认实例
+// Default 默认实例
 func Default() *Engine {
 	if server == nil {
 		engine := gin.Default()
@@ -28,7 +29,7 @@ func Default() *Engine {
 	return server
 }
 
-//InitConfig 初始化配置
+// InitConfig 初始化配置
 func (engine *Engine) InitConfig(configFiles ...string) *Engine {
 	configFile := global.ConfigPath
 	if len(configFiles) > 0 {
@@ -49,13 +50,13 @@ func (engine *Engine) InitConfig(configFiles ...string) *Engine {
 	return engine
 }
 
-//InitDataBase 初始化数据库
+// InitDataBase 初始化数据库
 func (engine *Engine) InitDataBase() *Engine {
 	orm.InitGorm()
 	return engine
 }
 
-//InitJob 初始化任务
+// InitJob 初始化任务
 func (engine *Engine) InitJob(handler ...func()) *Engine {
 	if len(handler) > 0 {
 		for _, item := range handler {
@@ -65,7 +66,7 @@ func (engine *Engine) InitJob(handler ...func()) *Engine {
 	return engine
 }
 
-//InitRoute 初始化路由
+// InitRoute 初始化路由
 func (engine *Engine) InitRoute(handler ...func()) *Engine {
 	if len(handler) > 0 {
 		for _, item := range handler {
@@ -75,12 +76,23 @@ func (engine *Engine) InitRoute(handler ...func()) *Engine {
 	return engine
 }
 
-//Start 启动服务
+// Middleware 使用全局中间件
+func (engine *Engine) Middleware(handlers ...gin.HandlerFunc) *Engine {
+	if len(handlers) > 0 {
+		for _, item := range handlers {
+			engine.Engine.Use(item)
+		}
+	}
+	return engine
+}
+
+// Start 启动服务
 func (engine *Engine) Start() {
 	port := "8080"
 	if os.Getenv("server.port") != "" {
 		port = os.Getenv("server.port")
 	}
 	Default().Static("/static", "./static")
+	fmt.Println("http start at :" + port)
 	_ = Default().Run(":" + port)
 }

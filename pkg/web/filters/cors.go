@@ -2,6 +2,7 @@ package filters
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gookit/goutil/strutil"
 	"net/http"
 	"strings"
 )
@@ -14,6 +15,11 @@ func Cors(headers ...string) gin.HandlerFunc {
 		allowHeaders = strings.Join(headers, ",")
 	}
 	return func(context *gin.Context) {
+		//过滤掉静态目录
+		if strutil.Substr(context.Request.RequestURI, 0, 7) == "/static" {
+			context.Next()
+			return
+		}
 		context.Header("Access-Control-Allow-Origin", "*")
 		context.Header("Access-Control-Allow-Headers", allowHeaders)
 		context.Header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, OPTIONS, DELETE")

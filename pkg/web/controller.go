@@ -11,15 +11,19 @@ func (c *Controller) Response(context *Context, data interface{}, err error) {
 	if err != nil {
 		serviceError := err.(*ServiceError)
 		context.Set("error", err)
-		context.JSON(http.StatusOK, &Response{
+		responseData := &Response{
 			Code:    serviceError.Code,
 			Message: serviceError.Error(),
-		})
+		}
+		context.Set("response", responseData)
+		context.JSON(http.StatusOK, responseData)
 	} else {
-		context.JSON(http.StatusOK, &Response{
+		responseData := &Response{
 			Code:    http.StatusOK,
-			Message: "success.",
+			Message: "操作成功",
 			Data:    data,
-		})
+		}
+		context.Set("response", responseData)
+		context.JSON(http.StatusOK, responseData)
 	}
 }

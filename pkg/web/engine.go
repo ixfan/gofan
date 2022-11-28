@@ -93,6 +93,7 @@ func (engine *Engine) Start() {
 		port = os.Getenv("server.port")
 	}
 	Default().Static("/static", "./static")
+	Default().InitRoute(Upload)
 	fmt.Println("http start at :" + port)
 	_ = Default().Run(":" + port)
 }

@@ -42,7 +42,7 @@ func (controller UploadController) UploadFile(ctx *Context) {
 	}
 	ext := path.Ext(file.Filename)
 	newId, _ := tools.NewSnowflakeId()
-	folder := "/static/files/" + time.Now().Format("20060102")
+	folder := "/" + StaticFolder + "/files/" + time.Now().Format("20060102")
 	_ = os.MkdirAll("."+folder, os.ModePerm)
 	dst := folder + "/" + fmt.Sprintf("%v", newId) + ext
 	err = ctx.SaveUploadedFile(file, "."+dst)
@@ -73,7 +73,7 @@ func (controller UploadController) UploadImage(ctx *Context) {
 		controller.Response(ctx, nil, ThrowError(ArgError, "请确认上传.jpg,.png,.gif,.jpeg后缀格式的图片"))
 	}
 	newId, _ := tools.NewSnowflakeId()
-	folder := "/static/images/" + time.Now().Format("20060102")
+	folder := "/" + StaticFolder + "/images/" + time.Now().Format("20060102")
 	dst := folder + "/" + fmt.Sprintf("%v", newId) + ext
 	_ = os.MkdirAll("."+folder, os.ModePerm)
 	err = ctx.SaveUploadedFile(file, "."+dst)

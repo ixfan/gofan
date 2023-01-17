@@ -17,6 +17,8 @@ type Engine struct {
 
 var server *Engine
 
+var StaticFolder = "static"
+
 // Default 默认实例
 func Default() *Engine {
 	if server == nil {
@@ -92,8 +94,8 @@ func (engine *Engine) Start() {
 	if os.Getenv("server.port") != "" {
 		port = os.Getenv("server.port")
 	}
-	Default().Static("/static", "./static")
+	Default().Static("/"+StaticFolder, "./"+StaticFolder)
 	Default().InitRoute(Upload)
 	fmt.Println("http start at :" + port)
-	_ = Default().Run(":" + port)
+	_ = Default().Run("0.0.0.0:" + port)
 }

@@ -9,6 +9,9 @@ type ClientInterface interface {
 	Set(key string, value interface{}, duration time.Duration) CmdResultInterface
 	Get(key string) CmdResultInterface
 	Del(key string) error
+	SetNx(key string, value interface{}, duration time.Duration) (bool, error)
+	Increment(key string, duration time.Duration) (int64, error)
+	Decrement(key string, duration time.Duration) (int64, error)
 	FlushDB() error
 	Close() error
 	LPop(key string) CmdResultInterface
@@ -21,5 +24,7 @@ type CmdResultInterface interface {
 }
 
 func Default() ClientInterface {
-	return &GoRedisClient{}
+	client := &GoRedisClient{}
+	client.Connect()
+	return client
 }

@@ -105,7 +105,7 @@ func AdvanceSearch(transaction *Transaction, model interface{}, condition *Condi
 			if len(item) <= 0 {
 				continue
 			}
-			tx = tx.Where(key+"in ?", item)
+			tx = tx.Where(key+" in ?", item)
 		}
 	}
 	if len(condition.NotIn) > 0 {
@@ -114,7 +114,7 @@ func AdvanceSearch(transaction *Transaction, model interface{}, condition *Condi
 			if len(item) <= 0 {
 				continue
 			}
-			tx = tx.Where(key+"not in ?", item)
+			tx = tx.Where(key+" not in ?", item)
 		}
 	}
 	//SQL语句条件

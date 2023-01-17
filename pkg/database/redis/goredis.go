@@ -66,6 +66,22 @@ func (client *GoRedisClient) Close() error {
 	return client.driver.Close()
 }
 
+func (client *GoRedisClient) SetNx(key string, value interface{}, duration time.Duration) (bool, error) {
+	return client.driver.SetNX(context.Background(), key, value, duration).Result()
+}
+
+func (client *GoRedisClient) Increment(key string, duration time.Duration) (int64, error) {
+	result, err := client.driver.Incr(context.Background(), key).Result()
+	client.driver.Expire(context.Background(), key, duration)
+	return result, err
+}
+
+func (client *GoRedisClient) Decrement(key string, duration time.Duration) (int64, error) {
+	result, err := client.driver.Decr(context.Background(), key).Result()
+	client.driver.Expire(context.Background(), key, duration)
+	return result, err
+}
+
 func (client *GoRedisClient) LPop(key string) CmdResultInterface {
 	length, err := client.driver.LLen(context.Background(), key).Result()
 	if err != nil || length <= 0 {

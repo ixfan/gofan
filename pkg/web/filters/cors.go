@@ -7,10 +7,12 @@ import (
 	"strings"
 )
 
+var AllowHeaders = "*"
+
 func Cors(headers ...string) gin.HandlerFunc {
 	var allowHeaders string
 	if len(headers) <= 0 {
-		allowHeaders = "*"
+		allowHeaders = AllowHeaders
 	} else {
 		allowHeaders = strings.Join(headers, ",")
 	}
@@ -23,7 +25,7 @@ func Cors(headers ...string) gin.HandlerFunc {
 		context.Header("Access-Control-Allow-Origin", "*")
 		context.Header("Access-Control-Allow-Headers", allowHeaders)
 		context.Header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, OPTIONS, DELETE")
-		context.Header("Access-Control-Allow-Credentials", "false")
+		context.Header("Access-Control-Allow-Credentials", "true")
 		context.Header("Cache-Control", "no-cache, private")
 		context.Header("Content-Type", "application/json")
 		if strings.ToUpper(context.Request.Method) == "OPTIONS" {

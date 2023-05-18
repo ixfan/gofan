@@ -22,7 +22,7 @@ func NewContext(context *gin.Context) *Context {
 	return &Context{context}
 }
 
-//Transaction 获取事务
+// Transaction 获取事务
 func (context *Context) Transaction() *orm.Transaction {
 	transaction, exists := context.Get(global.TransactionKey)
 	if !exists {
@@ -40,14 +40,14 @@ func (context *Context) Auth() *auth.User {
 }
 
 var (
-	uni      *ut.UniversalTranslator
-	validate *validator.Validate
+// uni      *ut.UniversalTranslator
+// validate *validator.Validate
 )
 
 func (context *Context) Validate(params interface{}) error {
-	validate = validator.New()
+	validate := validator.New()
 	lang := zh.New()
-	uni = ut.New(lang, lang)
+	uni := ut.New(lang, lang)
 	trans, _ := uni.GetTranslator("zh")
 	_ = zhTranslations.RegisterDefaultTranslations(validate, trans)
 	err := validate.Struct(params)

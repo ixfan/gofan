@@ -22,16 +22,23 @@ func Cors(headers ...string) gin.HandlerFunc {
 			context.Next()
 			return
 		}
-		context.Header("Access-Control-Allow-Origin", "*")
-		context.Header("Access-Control-Allow-Headers", allowHeaders)
-		context.Header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, OPTIONS, DELETE")
-		context.Header("Access-Control-Allow-Credentials", "true")
-		context.Header("Cache-Control", "no-cache, private")
-		context.Header("Content-Type", "application/json")
-		if strings.ToUpper(context.Request.Method) == "OPTIONS" {
-			context.JSON(http.StatusOK, nil)
-			context.Abort()
-			return
+		method := context.Request.Method
+		origin := context.Request.Header.Get("Origin")
+		if origin != "" {
+			context.Header("Access-Control-Allow-Origin", origin) // 可将将 * 替换为指定的域名
+			context.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
+			context.Header("Access-Control-Allow-Headers", allowHeaders)
+			context.Header("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Cache-Control, Content-Language, Content-Type")
+			context.Header("Access-Control-Allow-Credentials", "true")
+		} else {
+			context.Header("Access-Control-Allow-Origin", "*") // 可将将 * 替换为指定的域名
+			context.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
+			context.Header("Access-Control-Allow-Headers", allowHeaders)
+			context.Header("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Cache-Control, Content-Language, Content-Type")
+			context.Header("Access-Control-Allow-Credentials", "true")
+		}
+		if method == "OPTIONS" {
+			context.AbortWithStatus(http.StatusNoContent)
 		}
 		context.Next()
 	}
